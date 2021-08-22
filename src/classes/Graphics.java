@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -25,10 +27,10 @@ public class Graphics extends JFrame implements ActionListener {
     private JLabel option;
     private JComboBox<String> coption;
     private JButton submit;
+    private JButton reset;
     private JTextArea tout;
 
     private String options[] = {"12 months", "24 months", "36 months"};
-
 
     public Graphics() {
 
@@ -98,6 +100,9 @@ public class Graphics extends JFrame implements ActionListener {
         panel.add(coption);
 
         tout = new JTextArea();
+        tout.setBorder(BorderFactory.createCompoundBorder(
+        tout.getBorder(), 
+        BorderFactory.createEmptyBorder(5, 20, 5, 5)));
         tout.setFont(new Font("Arial", Font.PLAIN, 16));
         tout.setSize(400, 400);
         tout.setLocation(360, 100);
@@ -111,15 +116,90 @@ public class Graphics extends JFrame implements ActionListener {
         submit.setLocation(100, 420);
         submit.addActionListener(this);
         panel.add(submit);
-
+        
+        reset = new JButton("Reset");
+        reset.setFont(new Font("Arial", Font.PLAIN, 16));
+        reset.setSize(100, 30);
+        reset.setLocation(200, 420);
+        reset.addActionListener(this);
+        panel.add(reset);
+        
         this.getContentPane().add(panel);
     
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
 
+        try {
+            if(e.getSource() == submit) {
+                
+                Credit credit = new Credit(
+                    Double.parseDouble(tamount.getText()),
+                    Double.parseDouble(tpaydown.getText()),
+                    (String)coption.getSelectedItem()
+                );
+                
+                Double totalCredit;
+                
+                DecimalFormat df4 = new DecimalFormat("#.##");
+                
+                String data
+                            = "\nResume\n\n"
+                            + "Amount: "
+                            + "$" + df4.format(credit.getAmount()) + "\n"
+                            + "Paydown: "
+                            + "$" + df4.format(credit.getPaydown()) + "\n"
+                            + "Payment option: "
+                            + credit.getPaymentOption() + "\n"
+                            + "Capital: "
+                            + "$" + df4.format((credit.getAmount()
+                            - credit.getPaydown()));
+                
+
+                String data1 = "\n\n\nTotal Credit\n\n";
+
+                switch (credit.getPaymentOption()) {
+                    case "12 months":
+                        totalCredit = credit.calculatePayment(1);
+                        data1
+                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                            + "Monthly Payment\n\n"
+                            + "$" + df4.format(totalCredit/12) + " MXN " + "\n"
+                            + "x 12 months";
+                        break;
+                    case "24 months":
+                        totalCredit = credit.calculatePayment(2);
+                        data1
+                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                            + "Monthly Payment\n\n"
+                            + "$" + df4.format(totalCredit/24) + " MXN " + "\n"
+                            + "x 24 months";
+                        break;
+                    case "36 months":
+                        totalCredit = credit.calculatePayment(3);
+                        data1
+                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                            + "Monthly Payment\n\n"
+                            + "$" + df4.format(totalCredit/36) + " MXN " + "\n"
+                            + "x 36 months";break;
+                    default:
+                        break;
+                }
+    
+                tout.setText(data + data1);
+                tout.setEditable(false);
+            
+            } else if (e.getSource() == reset) {
+                tamount.setText("");
+                tpaydown.setText("");
+                coption.setSelectedIndex(0);
+                tout.setText("");
+                tout.setEditable(false);
+            }
+        } catch (Exception error) {
+            System.out.println(error);
+        }
+
+    }
 }
