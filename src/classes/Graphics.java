@@ -102,7 +102,7 @@ public class Graphics extends JFrame implements ActionListener {
         tout = new JTextArea();
         tout.setBorder(BorderFactory.createCompoundBorder(
         tout.getBorder(), 
-        BorderFactory.createEmptyBorder(5, 20, 5, 5)));
+        BorderFactory.createEmptyBorder(20, 20, 5, 20)));
         tout.setFont(new Font("Arial", Font.PLAIN, 16));
         tout.setSize(400, 400);
         tout.setLocation(360, 100);
@@ -130,66 +130,80 @@ public class Graphics extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        
         try {
+
+            Double amountValue = Double.parseDouble(tamount.getText());
+            Double paydownValue = Double.parseDouble(tpaydown.getText());
+            String optionValue = (String)coption.getSelectedItem();
+
             if(e.getSource() == submit) {
                 
-                Credit credit = new Credit(
-                    Double.parseDouble(tamount.getText()),
-                    Double.parseDouble(tpaydown.getText()),
-                    (String)coption.getSelectedItem()
-                );
-                
-                Double totalCredit;
-                
-                DecimalFormat df4 = new DecimalFormat("#.##");
-                
-                String data
-                            = "\nResume\n\n"
-                            + "Amount: "
-                            + "$" + df4.format(credit.getAmount()) + "\n"
-                            + "Paydown: "
-                            + "$" + df4.format(credit.getPaydown()) + "\n"
-                            + "Payment option: "
-                            + credit.getPaymentOption() + "\n"
-                            + "Capital: "
-                            + "$" + df4.format((credit.getAmount()
-                            - credit.getPaydown()));
-                
-
-                String data1 = "\n\n\nTotal Credit\n\n";
-
-                switch (credit.getPaymentOption()) {
-                    case "12 months":
-                        totalCredit = credit.calculatePayment(1);
-                        data1
-                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
-                            + "Monthly Payment\n\n"
-                            + "$" + df4.format(totalCredit/12) + " MXN " + "\n"
-                            + "x 12 months";
-                        break;
-                    case "24 months":
-                        totalCredit = credit.calculatePayment(2);
-                        data1
-                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
-                            + "Monthly Payment\n\n"
-                            + "$" + df4.format(totalCredit/24) + " MXN " + "\n"
-                            + "x 24 months";
-                        break;
-                    case "36 months":
-                        totalCredit = credit.calculatePayment(3);
-                        data1
-                            += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
-                            + "Monthly Payment\n\n"
-                            + "$" + df4.format(totalCredit/36) + " MXN " + "\n"
-                            + "x 36 months";break;
-                    default:
-                        break;
-                }
+                if (
+                    paydownValue >= amountValue *.2 &&
+                    paydownValue <= amountValue *.9
+                ) {
+                    Credit credit = new Credit(
+                        amountValue,
+                        paydownValue,
+                        optionValue
+                    );
+                    
+                    Double totalCredit;
+                    
+                    DecimalFormat df4 = new DecimalFormat("#.##");
+                    
+                    String data
+                                = "Resume\n\n"
+                                + "Amount: "
+                                + "$" + df4.format(credit.getAmount()) + "\n"
+                                + "Paydown: "
+                                + "$" + df4.format(credit.getPaydown()) + "\n"
+                                + "Payment option: "
+                                + credit.getPaymentOption() + "\n"
+                                + "Capital: "
+                                + "$" + df4.format((credit.getAmount()
+                                - credit.getPaydown()));
+                    
     
-                tout.setText(data + data1);
-                tout.setEditable(false);
+                    String data1 = "\n\n\nTotal Credit\n\n";
+    
+                    switch (credit.getPaymentOption()) {
+                        case "12 months":
+                            totalCredit = credit.calculatePayment(1);
+                            data1
+                                += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                                + "Monthly Payment\n\n"
+                                + "$" + df4.format(totalCredit/12) + " MXN " + "\n"
+                                + "x 12 months";
+                            break;
+                        case "24 months":
+                            totalCredit = credit.calculatePayment(2);
+                            data1
+                                += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                                + "Monthly Payment\n\n"
+                                + "$" + df4.format(totalCredit/24) + " MXN " + "\n"
+                                + "x 24 months";
+                            break;
+                        case "36 months":
+                            totalCredit = credit.calculatePayment(3);
+                            data1
+                                += "$" + df4.format(totalCredit) + " MXN" + "\n\n\n"
+                                + "Monthly Payment\n\n"
+                                + "$" + df4.format(totalCredit/36) + " MXN " + "\n"
+                                + "x 36 months";break;
+                        default:
+                            break;
+                    }
+        
+                    tout.setText(data + data1);
+                    tout.setEditable(false);
             
+                } else {
+                    tout.setText("Paydown must be between 20% and 90% of the amount.");
+                    tout.setEditable(false);
+                }
+
             } else if (e.getSource() == reset) {
                 tamount.setText("");
                 tpaydown.setText("");
