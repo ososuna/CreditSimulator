@@ -4,13 +4,13 @@ public class Credit {
     
     private double amount;
     private double paydown;
-    private double interest;
+    private double interestRate;
     private String paymentOption;
 
-    public Credit(double amount, double paydown, double interest, String paymentOption) {
+    public Credit(double amount, double paydown, String paymentOption) {
         this.amount = amount;
         this.paydown = paydown;
-        this.interest = interest;
+        this.interestRate = .1599;
         this.paymentOption = paymentOption;
     }
 
@@ -30,12 +30,12 @@ public class Credit {
         this.paydown = paydown;
     }
 
-    public double getInterest() {
-        return interest;
+    public double getInterestRate() {
+        return interestRate;
     }
 
-    public void setInterest(double interest) {
-        this.interest = interest;
+    public void setInterestRate(double interestRate) {
+        this.interestRate = interestRate;
     }
 
     public String getPaymentOption() {
@@ -46,9 +46,14 @@ public class Credit {
         this.paymentOption = paymentOption;
     }
 
+    public Double calculatePayment(int years) {
+        Double capital = this.amount - this.paydown;
+        return capital * Math.pow((1 + this.interestRate), years);
+    }
+
     @Override
     public String toString() {
-        return "Credit [amount=" + amount + ", interest=" + interest + ", paydown=" + paydown + ", paymentOption="
+        return "Credit [amount=" + amount + ", interest=" + interestRate + ", paydown=" + paydown + ", paymentOption="
                 + paymentOption + "]";
     }
 
